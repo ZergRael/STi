@@ -51,7 +51,7 @@ modules.snatched = {
 						t.status.seeding = $(this).find("img[alt=Oui]").length > 0;
 					}
 					else if(i == 9) {
-						t.status.completed = $(this).find("img[alt=Oui]").length > 0;
+						t.status.completed = $(this).find("img[alt=Yes]").length > 0;
 					}
 					else if(i == 10) {
 						t.status.hnr = $(this).text() != "Non";
