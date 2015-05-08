@@ -39,7 +39,7 @@ def run():
 		'// Import simple-storage API',
 		'var sstorage = require("sdk/simple-storage");',
 		'pageMod.PageMod({',
-		'  include: ["so-torrent.com"],',
+		'  include: ["*.so-torrent.com"],',
 		'  contentScriptFile: [',])
 	mainMid = '\n'.join([
 		'',
