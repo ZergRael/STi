@@ -2,7 +2,7 @@ modules.m_account = {
 	name: "m_account",
 	dText: "Account",
 	pages: [
-		{ path_name: "/my.php" , options: { signature_input: "textarea[name=signature]", customMenu_input: "textarea[name=bloc_left]", previewDelay: 600 } }
+		{ path_name: "/my.php", params: false, options: { signature_input: "textarea[name=signature]", customMenu_input: "textarea[name=bloc_left]", previewDelay: 600 } }
 	],
 	loaded: false,
 	loadModule: function(mOptions) {
@@ -51,7 +51,7 @@ modules.m_account = {
 		dbg("[Init] Starting");
 		// Execute functions
 
-		if(pageUrl.params.settings) {
+		if(!pageUrl.params) {
 			$(mOptions.signature_input).keyup(onSignatureUpdate);
 			$(mOptions.customMenu_input).keyup(onCustomMenuUpdate);
 			$(mOptions.signature_input).trigger("keyup");

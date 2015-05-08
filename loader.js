@@ -14,6 +14,10 @@ var startAll = function() {
 			}
 
 			if(pageUrl.path.search("^(" + p.path_name + ")$") != -1) {
+				if(p.params === false && pageUrl.params) {
+					return;
+				}
+
 				if(!p.params) {
 					m.loadModule(p.options);
 					return false;

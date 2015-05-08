@@ -2,7 +2,7 @@ modules.snatched = {
 	name: "snatched",
 	dText: "Snatched",
 	pages: [
-		{ path_name: "/my.php", pamams: { snatched: true }, options: { buttons: '#contenu div:first', loading: '.pager_align' } }
+		{ path_name: "/my.php", params: { snatched: true }, options: { buttons: '#contenu div:first', loading: '.pager_align' } }
 	],
 	loaded: false,
 	loadModule: function(mOptions) {
