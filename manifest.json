@@ -6,6 +6,9 @@
   "manifest_version": 2,
   "description": "Sooo, let's DL moar ?",
   "icons": { 
+    "16": "images/sti.16.png",
+    "48": "images/sti.48.png",
+    "128": "images/sti.128.png"
   },
   "content_scripts": [
     {
