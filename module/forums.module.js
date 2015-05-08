@@ -2,7 +2,8 @@ modules.forums = {
 	name: "forums",
 	dText: "Forums",
 	pages: [
-		{ path_name: "/forums.php", params: { action: 'viewtopic' }, options: { buttons: '.linkbox:first' } }
+		{ path_name: "/forums.php", params: { action: 'viewtopic' }, options: { buttons: '.linkbox:first' } },
+		{ path_name: "/forums.php", params: { action: "editpost", postid: "*"} }
 	],
 	loaded: false,
 	loadModule: function(mOptions) {
@@ -48,26 +49,41 @@ modules.forums = {
 					postId = $post.find("a:first").text().match(/\d+/)[0];
 
 				utils.grabPage({ host: pageUrl.host, path: pageUrl.path, params: {action: "editpost", postid: postId }}, function(data) {
-					$post.find(".comment").html($(data).find("#contenu form"));
+					var $form = $(data).find("#contenu form");
+					$post.find(".comment").html($form);
+					$form.find("textarea").on("focusin", function() {
+						$form.attr("name", "form");
+					}).focus().on("focusout", function() {
+						$form.attr("name", "Form");
+					});
 					$(document).trigger("reactivate_keydown_listenner");
 				});
 			});
 		}
 
+		var fixEditBBSmilies = function() {
+			$("#contenu form").attr("name", "form");
+		}
+
 		dbg("[Init] Starting");
 		// Execute functions
 
-		addSignatureToggler();
-		hideSignatures();
-		addEditionListener();
-
-		$(document).on("endless_scrolling_insertion_done", function() {
-			dbg("[endless_scrolling] Module specific functions");
-			$(document).trigger("recolor_twits");
+		if(pageUrl.params.action == "viewtopic") {
+			addSignatureToggler();
 			hideSignatures();
-			$(document).trigger("es_dom_process_done");
-		});
+			addEditionListener();
 
+			$(document).on("endless_scrolling_insertion_done", function() {
+				dbg("[endless_scrolling] Module specific functions");
+				$(document).trigger("recolor_twits");
+				hideSignatures();
+				$(document).trigger("es_dom_process_done");
+			});
+		}
+		else {
+			fixEditBBSmilies();
+		}
+		
 		dbg("[Init] Ready");
 	}
 };
