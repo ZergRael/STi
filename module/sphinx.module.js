@@ -1,0 +1,95 @@
+modules.sphinx = {
+	name: "sphinx",
+	dText: "Sphinx",
+	pages: [
+		{ path_name: "/sphinx.php", options: {} },
+	],
+	loaded: false,
+	loadModule: function(mOptions) {
+		this.loaded = true;
+		var module_name = this.name;
+		var dbg = function() {
+			utils.dbg(module_name, arguments);
+		};
+
+		dbg("[Init] Loading module");
+		// Loading all functions used
+
+		var suggestMore = function() {
+			var searchQuery = $("#sphinxinput").val();
+			if(searchQuery) {
+				dbg("[QuerySuggest] Query : %s", searchQuery);
+				loadingHtml = '<center><img src="' + chrome.extension.getURL("images/loading.gif") + '" /><br />Analyse des entrailles d\'IMDB</center>';
+				appendFrame({ title: "STi IMDB Suggestions", data: loadingHtml, id: "suggest", relativeToObj: $(".categories_list"), top: -14, left: 840 });
+
+				// Try to get some results from IMDB: 4 + 4 max
+				utils.grabPage({ host: "https://api.thetabx.net", path: "/imdb/translate/3/" + encodeURIComponent(searchQuery) }, function(imdb) {
+					dbg("[QuerySuggest] Got data back");
+					if(!imdb.results || imdb.results.length === 0) {
+						$("#sti_suggest_data").html("Désolé, rien trouvé !");
+						return;
+					}
+					var suggestions = [];
+					$.each(imdb.results, function(imdbId, movie) {
+						dbg("[QuerySuggest] IMDB [ %s ]", imdbId);
+						$.each(movie, function(titleType, title) {
+							suggestions.push(title);
+						});
+					});
+					var suggestionsHtml = "";
+					$.map(suggestions, function(movieName, i) {
+						if($.inArray(movieName, suggestions) === i) {
+							suggestionsHtml += '<a href="' + utils.craftUrl({ host: pageUrl.host, path: pageUrl.path, params: { q: encodeURIComponent(movieName) } }) + '">' + movieName + '</a><br />';
+						}
+					});
+					// { id, classes, title, header, data, relativeToId, relativeToObj, relativeToWindow, top, left, css, buttons = [ /* close is by default */ { b_id, b_text, b_callback} ], underButtonsText }
+					$("#sti_suggest_data").html(suggestionsHtml);
+
+					if(opt.get(modules.torrent_list.name, "imdb_auto_add") && modules.endless_scrolling.maxPage === 0 && imdb.levenshtein && imdb.levenshtein.bestTitle) {
+						dbg("[QueryTranslate] Looks like we can grab bestTranslation [%s] results", imdb.levenshtein.bestTitle);
+						var bestMatchUrl = utils.clone(pageUrl);
+						bestMatchUrl.params.q = encodeURIComponent(imdb.levenshtein.bestTitle); // From remote translation analysis - levenshtein
+						$("#torrent_list").before('<p class="pager_align page_loading"><img src="' + chrome.extension.getURL("images/loading.gif") + '" /><br />Recherche supraluminique des traductions</p>');
+						utils.grabPage(bestMatchUrl, function(data) {
+							var dataFrame = $(data).find("#torrent_list");
+							var header = dataFrame.find("tr:first");
+							if(header.length) {
+								header.find(".name_torrent_head").text(header.find(".name_torrent_head").text() + " - STi IMDB [ " + imdb.levenshtein.bestTitle + " ]");
+								header.addClass("sti_imdb_head");
+							}
+							var insertionData = dataFrame.find("tr");
+							if(insertionData.length) {
+								dbg("[QueryTranslate] Append bestTranslation results");
+								if(!$("#torrent_list").length) { // Build the results frame if there was no result on first query
+									$("#contenu .center:not(:first)").remove();
+									$("#contenu #videotheque").after(dataFrame).after("<br /><br />");
+								}
+								else {
+									$("#torrent_list").append(insertionData);
+								}
+								$(document).trigger("endless_scrolling_insertion_done");
+							}
+							else {
+								dbg("[QueryTranslate] Or maybe not (no results)");
+							}
+							dbg("[QueryTranslate] Ended");
+							$(".page_loading").remove();
+						});
+					}
+					else {
+						dbg("[QueryTranslate] Not even trying");
+					}
+				});
+			}
+		};
+
+		dbg("[Init] Starting");
+		// Execute functions
+
+		if(opt.get(modules.torrent_list.name, "imdb_suggest")) {
+			suggestMore();
+		}
+
+		dbg("[Init] Ready");
+	}
+};

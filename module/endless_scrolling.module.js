@@ -1,0 +1,423 @@
+modules.endless_scrolling = {
+	name: "endless_scrolling",
+	dText: "Endless scrolling",
+	pages: [
+		{ path_name: "/|/index.php", options: {
+			opt_name: "main", loading: '#pager_index', path: '/sphinx.php', domExtract: "#torrent_list tr", domInsertion: "#torrent_list", pageModifier: -1
+		} },
+		{ path_name: "/sphinx.php", options: {
+			opt_name: "sphinx", loading: '.pager_align', pagination: ".pager_align", domExtract: "#torrent_list tr", domInsertion: "#torrent_list", canSuggest: true, pageModifier: -1
+		} },
+		{ path_name: "/forums.php", params: { action: 'viewforum' }, options: {
+			opt_name: "viewforum", loading: '.thin table', pagination: 'p[align=center]', loadingAfter: true, domExtract: 'tbody tr:not(.colhead)', domInsertion: '.thin tr:last', insertAfter: true, scrollOffset: 180, stopInsertBottomOffset: 100, notListeningToTrigger: true, endOfStream: 'No posts to display!'
+		} },
+		{ path_name: "/forums.php", params: { action: 'viewtopic' }, options: {
+			opt_name: "viewtopic", loading: '.thin table:last', pagination: '.pager_align', loadingAfter: true, domExtract: '.thin table', domInsertion: '.thin table:last', insertAfter: true, scrollOffset: 600, stopInsertBottomOffset: 100
+		} },
+		{ path_name: "/my.php", params: { snatched: true }, options: {
+			opt_name: "snatched", loading: '.pager_align', pagination: ".pager_align", domExtract: "#table_snatchlist tr:not(:first)", domInsertion: "#table_snatchlist", pageModifier: -1
+		} },
+		{ path_name: "/my.php", params: { uploads: true }, options: {
+			opt_name: "uploads", loading: '.pager_align', pagination: '.pager_align', domExtract: "#contenu table tr", domInsertion: "#contenu table", cancelQ: true, cancelAmp: true, pageModifier: -1, notListeningToTrigger: true
+		} },
+		{ path_name: "/logs.php", options: {
+			opt_name: "logs", loading: '.pager_align', pagination: '.pager_align', domExtract: "tbody tr:not(:first)", domInsertion: "tbody", pageModifier: -1
+		} },
+		{ path_name: "/req.php", options: {
+			opt_name: "req", loading: '.pager_align', pagination: '.pager_align', domExtract: "#requests_list tbody tr:not(:first)", domInsertion: "#requests_list tbody", pageModifier: -1, notListeningToTrigger: true
+		} },
+	],
+	loaded: false,
+	loadModule: function(mOptions) {
+		this.loaded = true;
+		var module_name = this.name;
+		var dbg = function() {
+			utils.dbg(module_name, arguments);
+		};
+
+		dbg("[Init] Loading module");
+		// Loading all functions used
+
+		// Extracts data from pagination bar (firstPage & lastPage) & deduce actual page
+		var pagerData = { firstPage: 1 + (mOptions.pageModifier || 0), pages: [] };
+		pagerData.thisPage = (pageUrl.params && pageUrl.params.page ? (pageUrl.params.page == "last" ? false : Number(pageUrl.params.page)) : Number(pagerData.firstPage));
+		pagerData.maxPage = (mOptions.pagination ? pagerData.thisPage : false);
+		var extractPagerAlignData = function() {
+			if(!mOptions.pagination) {
+				return;
+			}
+
+			var paginateBar = $(mOptions.pagination);
+			if(!paginateBar.length || !paginateBar.text().match(/\S/)) {
+				return;
+			}
+
+			dbg("[page_extract] Analysing pages");
+			var paginationUrls = paginateBar.html().match(/page=\d+/g);
+			if(!paginationUrls) {
+				return;
+			}
+
+			dbg("[page_extract] Extracting pages");
+			var maxPage = pagerData.maxPage;
+			$.each(paginationUrls, function(i, paginationUrl) {
+				var pageId = paginationUrl.match(/\d+/);
+				if(!pageId) {
+					return;
+				}
+				pagerData.pages.push(Number(pageId[0]));
+				maxPage = Math.max(maxPage, Number(pageId[0]));
+			});
+			pagerData.maxPage = maxPage;
+
+			dbg("[page_extract] Done");
+		};
+
+		// Builds a A from pageId
+		var pageToLink = function(page) {
+			var linkUrl = utils.clone(pageUrl);
+			linkUrl.params = linkUrl.params || {};
+			linkUrl.cancelQ = mOptions.cancelQ;
+			linkUrl.cancelAmp = mOptions.cancelAmp;
+			linkUrl.params.page = page.pageId;
+			var text = page.pageId - (mOptions.pageModifier || 0);
+
+			if(page.end) {
+				text = "[" + text + "]";
+			}
+			else if(page.prec) {
+				text = "<";
+			}
+			else if(page.next) {
+				text = ">";
+			}
+			return '<a href="' + utils.craftUrl(linkUrl) + '">' + (page.thisPage ? '<strong>' + text + '</strong>' : text) + '</a>';
+		};
+
+		// Replace pagination bar with custom one which get updated while ESing
+		var rewritePagination = function(thisPage) {
+			if(!opt.get(module_name, "pagination_rewrite") || pagerData.maxPage == pagerData.firstPage) {
+				return;
+			}
+
+			dbg("[pagination_rewrite] We're at [%d] in [%d/%d]", thisPage, pagerData.firstPage, pagerData.maxPage);
+			var maxPagesToShow = 5,
+				pagesEachSide = (maxPagesToShow - 1) / 2,
+				pagesToShow = [],
+				addLeft = 0,
+				i;
+			for(i = thisPage - pagesEachSide; i <= thisPage + pagesEachSide; i++) {
+				while(i < pagerData.firstPage) {
+					i++;
+					pagesEachSide++;
+				}
+				pagesToShow.push(i);
+			}
+
+			for(i = 0; i < pagesToShow.length; i++) {
+				if(pagesToShow[i] && pagesToShow[i] > pagerData.maxPage) {
+					pagesToShow.splice(i, 1);
+					addLeft++;
+					i--;
+				}
+			}
+
+			for(i = 1; i <= addLeft; i++) {
+				if(pagesToShow[0] == pagerData.firstPage) {
+					break;
+				}
+
+				pagesToShow.unshift(pagesToShow[0] - 1);
+			}
+			dbg("[pagination_rewrite] Rewriting with %s", pagesToShow.join(', '));
+
+			var paginateBar = [], hasPrec = false, hasNext = false;
+			if(thisPage != pagerData.firstPage) {
+				paginateBar.push({pageId: pagerData.firstPage, end: true});
+				paginateBar.push({pageId: thisPage - 1, prec: true});
+				hasPrec = true;
+			}
+			for(i in pagesToShow) {
+				paginateBar.push({pageId: pagesToShow[i], thisPage: (pagesToShow[i] == thisPage)});
+			}
+			if(thisPage != pagerData.maxPage) {
+				paginateBar.push({pageId: thisPage + 1, next: true});
+				hasNext = true;
+				paginateBar.push({pageId: pagerData.maxPage, end: true});
+			}
+
+			var paginateBarHtml = "";
+			for(i = 0; i < paginateBar.length; i++) {
+				paginateBarHtml += pageToLink(paginateBar[i]);
+				if(i == paginateBar.length - 1) { }
+				else if(i === 0 && hasPrec || i == paginateBar.length - 2 && hasNext) {
+					paginateBarHtml += " ";
+				}
+				else {
+					paginateBarHtml += " | ";
+				}
+			}
+
+			$(mOptions.pagination).html(paginateBarHtml);
+		};
+
+		var defaultScrollOffset = 200;
+		var backTopButtonOffset = 10;
+		var loadingPage = false;
+		var wentToPageBottom = false;
+		var lostPage = false;
+		var nextPage = pagerData.thisPage !== false ? pagerData.thisPage + 1 : false;
+		var previousLookedPage = pagerData.thisPage;
+		var jOnScroll = function() {
+			if(!opt.get(module_name, "endless_scrolling") || !opt.sub_get(module_name, "endless_scrolling", mOptions.opt_name) || nextPage === false) {
+				return;
+			}
+
+			// Damnit Gecko
+			var scrollTop = (document.body.scrollTop || document.documentElement.scrollTop);
+			if(opt.get(module_name, "adapt_url") && !lostPage) {
+				var lookingAtPage = 0;
+				// Find out what page we are looking at
+				$.each(insertedOffsets, function(topOffset, page) {
+					if(scrollTop < topOffset) {
+						return false;
+					}
+					lookingAtPage = page;
+				});
+
+				// Looks like we changed page, updates
+				if(lookingAtPage != previousLookedPage) {
+					if(lookingAtPage > previousLookedPage + 1 || lookingAtPage < previousLookedPage - 1) {
+						dbg("[adapt_url] Welp, I'm lost, reset");
+						lostPage = true;
+						lookingAtPage = pagerData.thisPage;
+					}
+
+					dbg("[adapt_url] Looking at page %d", lookingAtPage);
+
+					// Update URL
+					var thisUrl = utils.clone(pageUrl);
+					thisUrl.params = thisUrl.params || {};
+					thisUrl.cancelQ = mOptions.cancelQ;
+					thisUrl.cancelAmp = mOptions.cancelAmp;
+					thisUrl.params.page = lookingAtPage;
+					window.history.replaceState(null, null, utils.craftUrl(thisUrl));
+
+					rewritePagination(lookingAtPage);
+					previousLookedPage = lookingAtPage;
+				}
+			}
+
+			// ignore scrolling when backToTop button is pushed
+			if(ignoreScrolling) {
+				return;
+			}
+
+			// Back to top button management
+			if(scrollTop > backTopButtonOffset) {
+				$("#backTopButton").show();
+				$("#esPauseButton").show();
+			}
+			else {
+				$("#backTopButton").hide();
+				$("#esPauseButton").hide();
+			}
+
+			// ignore scrolling we already grabbed all pages
+			if(stopEndlessScrolling || pauseEndlessScrolling) {
+				return;
+			}
+
+			// If we know what page we're at && (we are at last page || the next page is obviously out of boundary)
+			if(pagerData.maxPage !== false && nextPage > pagerData.maxPage) {
+				return;
+			}
+
+			// If, at any point in time, the user went to the very bottom the page, wait for confirmation before injection
+			if(opt.get(module_name, "pause_scrolling") && scrollTop + window.innerHeight >= document.documentElement.scrollHeight) {
+				dbg("[pause_scrolling] Stop inserting, got to page bottom");
+				wentToPageBottom = true;
+			}
+
+			if((scrollTop + window.innerHeight > document.documentElement.scrollHeight - (mOptions.scrollOffset ? mOptions.scrollOffset : defaultScrollOffset)) && !loadingPage) {
+				dbg("[EndlessScrolling] Loading next page");
+				// Prevent further unneeded fetching
+				loadingPage = true;
+
+				// Build the url object for the next page
+				var nextUrl = utils.clone(pageUrl);
+				nextUrl.path = mOptions.path ? mOptions.path : nextUrl.path;
+				nextUrl.params = nextUrl.params ? nextUrl.params : {};
+				nextUrl.cancelQ = mOptions.cancelQ || nextUrl.cancelQ || false;
+				nextUrl.cancelAmp = mOptions.cancelAmp || nextUrl.cancelAmp || false;
+				nextUrl.params.page = nextPage;
+				var loadingP = '<p class="pager_align page_loading"><img src="' + chrome.extension.getURL("images/loading.gif") + '" /><br />Réticulation des méta-données de la page suivante</p>';
+
+				// Loading gif injection
+				if(mOptions.loadingAfter) {
+					$(mOptions.loading).after(loadingP);
+				}
+				else {
+					$(mOptions.loading).before(loadingP);
+				}
+
+				// Fetching
+				utils.grabPage(nextUrl, function(data, page_n) {
+					// Extract needed data
+					insertionData = $(data).find(mOptions.domExtract);
+					dbg("[EndlessScrolling] Grab ended");
+					if(insertionData && insertionData.length && !(mOptions.endOfStream && insertionData.text().indexOf(mOptions.endOfStream) != -1)) {
+						// We use a generic function we can cycle because of the pause_scrolling
+						insertAjaxData(insertionData, page_n);
+					}
+					else {
+						dbg("[EndlessScrolling] No more data");
+						$(".page_loading").text("Plus rien en vue cap'tain !");
+					}
+				});
+			}
+		};
+
+		var insertedOffsets = {0: previousLookedPage};
+		var insertAjaxData = function(data, page_n) {
+			if(wentToPageBottom) {
+				dbg("[pause_scrolling] Waiting for user confirmation in order to insert more");
+				$(".page_loading").html('<a href="#" class="resume_endless_scrolling">Reprendre l\'endless scrolling</a>');
+				$(".resume_endless_scrolling").click(function(e) {
+					wentToPageBottom = false;
+					// For an unknown reason, sometimes this button fucks up, prevent it
+					e.preventDefault();
+					insertAjaxData(data, page_n);
+					return false;
+				});
+				return;
+			}
+
+			// Export data processing in another function in case we need some more parsing in the future
+			var processedData = processData(data, page_n);
+
+			// Inject data in the dom
+			dbg("[EndlessScrolling] Got data - Inserting");
+			if(mOptions.insertAfter) {
+				$(mOptions.domInsertion).after(processedData);
+			}
+			else {
+				$(mOptions.domInsertion).append(processedData);
+			}
+			modules.endless_scrolling.lastESPage = nextPage;
+			modules.endless_scrolling.done = nextPage >= pagerData.maxPage;
+			
+			// End the loading and prepare for next page
+			nextPage++;
+			loadingPage = false;
+			$(".page_loading").remove();
+			// Tell the other modules that we got some new data to process
+			$(document).trigger("endless_scrolling_insertion_done");
+			// If the module we are using does not need to process the data, we can build the offsets right now
+			// else, we wait for the es_dom_process_done trigger
+			if(mOptions.notListeningToTrigger) {
+				rebuildInsertedOffsets();
+			}
+			dbg("[EndlessScrolling] Insertion ended");
+		};
+
+		// Returns processed data, ready for injection
+		var processData = function(data, page_n) {
+			dbg("[data_processor] Found first dom element - Tagging it");
+			data.first().addClass("dom_page_start").data("page", page_n);
+			if(modules[module_name].preInsertion) {
+				data = modules[module_name].preInsertion(data);
+			}
+			return data;
+		};
+
+		// Triggered by es_dom_process_done
+		// Builds the offsets object we use in order to get the page we are looking at
+		var rebuildInsertedOffsets = function() {
+			dbg("[adapt_url] Rebuilding offets");
+			// There is no .dom_page_start for the original(first) page, but the offset is always 0, so insert it manualy
+			insertedOffsets = {0: insertedOffsets[0]};
+			// Find the page marker and get the associed offset
+			$(".dom_page_start").each(function() {
+				var line = $(this);
+				// Most browsers can't extract an offset from an hiden dom element
+				if(!line.is(":visible")) {
+					// Find the closest visible element, going down
+					line = line.nextAll(":visible").first();
+				}
+
+				if(line.offset()) {
+					insertedOffsets[line.offset().top] = $(this).data("page");
+				}
+			});
+			dbg("[adapt_url] Offsets ready");
+		};
+
+		// Returns the offset for a specific page
+		var getOffsetByPage = function(pageSearch) {
+			dbg("[adapt_url] Looking for page %d in offsets object", pageSearch);
+			var offset = false;
+			$.each(insertedOffsets, function(top, page) {
+				if(page == pageSearch) {
+					offset = top;
+					return false;
+				}
+			});
+			return offset;
+		};
+
+		var interceptPaginationClicks = function() {
+			// Remap href links to scroll to offset instead of load a new page
+			// We don't modify links, just add a click listenner and prevent the browser to change page if we can scroll
+			if(mOptions.pagination && opt.get(module_name, "adapt_url")) {
+				$(document).on("click", mOptions.pagination + " a", function() {
+					var href = $(this).attr("href");
+					var hrefPage = href.match(/page=(\d+)/);
+					if(hrefPage.length) {
+						toTop = getOffsetByPage(hrefPage[1]);
+						if(toTop !== false) {
+							dbg("[adapt_url] Found it. Scrolling to %d", toTop);
+							$(document).scrollTop(toTop);
+							return false;
+						}
+					}
+				});
+			}
+		};
+
+		dbg("[Init] Starting");
+		// Execute functions
+
+		extractPagerAlignData();
+		rewritePagination(pagerData.thisPage);
+		interceptPaginationClicks();
+
+		this.maxPage = pagerData.maxPage;
+		this.thisPage = pagerData.thisPage;
+		dbg("[EndlessScrolling] url relative pages : %d/%d", pagerData.thisPage, pagerData.maxPage);
+		$(document).scroll(jOnScroll);
+
+		// Auto endless scrolling pause if any textarea has been focused - mostly forums usage
+		$("textarea").focus(function() {
+			if(!wentToPageBottom) {
+				dbg("[EndlessScrolling] Focused textarea - Pause endless scrolling");
+				wentToPageBottom = true;
+			}
+		});
+
+		$(document).on("click", "a[onclick]", function() {
+			var onClickFunction = $(this).attr("onclick");
+			if((onClickFunction.indexOf("Quote") != -1 || onClickFunction.indexOf("insertion") != -1) && $("textarea").length) {
+				wentToPageBottom = true;
+			}
+		});
+
+		// Listen to after dom modifications by other modules
+		$(document).on("es_dom_process_done", function() {
+			rebuildInsertedOffsets();
+			$(document).trigger("scroll");
+		});
+
+		dbg("[Init] Ready");
+	},
+};
