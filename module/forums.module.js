@@ -35,11 +35,31 @@ modules.forums = {
 			$(".usersignature").hide();
 		}
 
+		var addEditionListener = function() {
+			if(!opt.get(module_name, "edit_inplace")) {
+				return;
+			}
+
+			$(document).on("click", "a[href^='forums.php?action=editpost']", function(e) {
+				console.log(this);
+				e.preventDefault();
+
+				var $post = $(this).parents(".forum_user_message"),
+					postId = $post.find("a:first").text().match(/\d+/)[0];
+
+				utils.grabPage({ host: pageUrl.host, path: pageUrl.path, params: {action: "editpost", postid: postId }}, function(data) {
+					$post.find(".comment").html($(data).find("#contenu form"));
+					$(document).trigger("reactivate_keydown_listenner");
+				});
+			});
+		}
+
 		dbg("[Init] Starting");
 		// Execute functions
 
 		addSignatureToggler();
 		hideSignatures();
+		addEditionListener();
 
 		$(document).on("endless_scrolling_insertion_done", function() {
 			dbg("[endless_scrolling] Module specific functions");

@@ -2,8 +2,8 @@ modules.twits = {
 	name: "twits",
 	dText: "Twits",
 	pages: [
-		{ path_name: "/forums.php", params: { action: 'viewtopic' }, options: { twit_color: { scanArea: ".comment" }, twit_autoc: { scanArea: "#Form" } } },
-		{ path_name: "/forums.php", params: { action: 'editpost' }, options: { twit_autoc: { scanArea: "#messageediting textarea" } } },
+		{ path_name: "/forums.php", params: { action: 'viewtopic' }, options: { twit_color: { scanArea: ".comment" }, twit_autoc: { scanArea: "p textarea" } } },
+		{ path_name: "/forums.php", params: { action: 'editpost' }, options: { twit_autoc: { scanArea: "p textarea" } } },
 		{ path_name: "/blog.php", params: { id: '*' }, options: { twit_color: { scanArea: ".blog_comment" }, twit_autoc: { scanArea: ".blog_responde textarea" } } }, // Not editable
 		{ path_name: "/torrent.php", params: { id: '*' }, options: { twit_color: { scanArea: ".com_text" }, twit_autoc: { scanArea: "#form_box textarea" } } },
 		{ path_name: "/com.php", params: { id: '*' }, options: { twit_color: { scanArea: ".com_text" }, twit_autoc: { scanArea: "#form_box textarea" } } },
@@ -119,7 +119,13 @@ modules.twits = {
 		// Twit autocomplete
 		$(document).on("reactivate_keydown_listenner", function() {
 			dbg("[AutoCTwit] Retry to bind");
-			$(mOptions.twit_autoc.scanArea).keydown(jOnKeydown);
+			$(mOptions.twit_autoc.scanArea).each(function(i, node) {
+				var events = $._data(node, "events");
+				console.log(events)
+				if(!events || !events.keydown) {
+					$(node).keydown(jOnKeydown);
+				}
+			});
 		});
 		if(mOptions.twit_autoc) {
 			$(mOptions.twit_autoc.scanArea).keydown(jOnKeydown);
@@ -130,45 +136,6 @@ modules.twits = {
 				colorizeTwits();
 			});
 		}
-
-		// On edit button click
-		$("#forums").on("click", "a[href^=#post]", function() {
-			var postId = $(this).attr("href").substr(5);
-			// If the editbox poped
-			if($("#editbox" + postId).length) {
-				dbg("[AutoCTwit] Editbox poped (%s) - Listening to keydown", postId);
-				// Listen for twit autocomplete in editbox
-				$("#editbox" + postId).keydown(jOnKeydown);
-
-				var waitMoreInterval = false;
-				var waitMore = function(postId) {
-					waitMoreInterval = setInterval(function() {
-						if(!$("#editbox" + postId).length) {
-							dbg("[TwitColorize] Edit is done - Colorize");
-							clearInterval(waitMoreInterval);
-							colorizeTwits(postId);
-						}
-					}, 100, postId);
-					
-				};
-				var bindEditButton = function() {
-					// On edit validation
-					$("#bar" + postId + " input:nth(1)").click(function() {
-						// Can't track DOM modification event, just wait a reasonnable amount of time to colorize the edited message
-						waitMore(postId);
-					});
-				};
-				var bindPrevButton = function() {
-					$("#bar" + postId + " input:nth(0)").click(function() {
-						bindEditButton();
-						bindPrevButton();
-					});
-				};
-
-				bindEditButton();
-				bindPrevButton();
-			}
-		});
 
 		// Building pseudos hashmap
 		buildPseudosHashmap();

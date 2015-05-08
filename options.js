@@ -53,6 +53,7 @@ var opt = {
 		forums: {
 			hidable_sigs:       { defaultVal: false, showInOptions: true, dispText: "Rendre les signatures masquables" },
 			hide_signatures:    { defaultVal: false, showInOptions: true, dispText: "Cacher les signatures par défaut", parent: "hidable_sigs", indicateParent: true },
+			edit_inplace:       { defaultVal: true, showInOptions: true, dispText: "Edition des posts directement dans le topic" },
 		},
 		torrent: {
 			quick_comment:      { defaultVal: true, showInOptions: true, dispText: "Afficher la boite de commentaire rapide sur les fiches torrent" },
