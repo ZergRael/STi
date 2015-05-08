@@ -3,11 +3,10 @@ modules.twits = {
 	dText: "Twits",
 	pages: [
 		{ path_name: "/forums.php", params: { action: 'viewtopic' }, options: { twit_color: { scanArea: ".comment" }, twit_autoc: { scanArea: "#Form" } } },
-		//{ path_name: "/box.php", options: { twit_color: { scanArea: "#shoutbox_contain" }, twit_autoc: { scanArea: ".shoutbox_msgbox" } } },
-		{ path_name: "/blog/", params: { id: '*' }, options: { twit_color: { scanArea: ".blog_comment" }, twit_autoc: { scanArea: "#new_blog_comm" } } }, // Not editable
-		{ path_name: "/torrent/\\d+/.*/?", options: { twit_color: { scanArea: ".comtable_content" }, twit_autoc: { scanArea: "#quickpost" } } },
-		{ path_name: "/com/", params: { id: '*' }, options: { twit_color: { scanArea: ".comtable_content" }, twit_autoc: { scanArea: "#quickpost" } } }
-		//{ path_name: "/com/", params: { editid: '*' }, options: { twit_autoc: { scanArea: "textarea" } } } // Can't autocomplete since we can't build pseudos hashmap
+		{ path_name: "/forums.php", params: { action: 'editpost' }, options: { twit_autoc: { scanArea: "#messageediting textarea" } } },
+		{ path_name: "/blog.php", params: { id: '*' }, options: { twit_color: { scanArea: ".blog_comment" }, twit_autoc: { scanArea: ".blog_responde textarea" } } }, // Not editable
+		{ path_name: "/torrent.php", params: { id: '*' }, options: { twit_color: { scanArea: ".com_text" }, twit_autoc: { scanArea: "#form_box textarea" } } },
+		{ path_name: "/com.php", params: { id: '*' }, options: { twit_color: { scanArea: ".com_text" }, twit_autoc: { scanArea: "#form_box textarea" } } }
 	],
 	loaded: false,
 	loadModule: function(mOptions) {
