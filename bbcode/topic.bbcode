@@ -3,10 +3,10 @@ Salutations à tous !
 
 Voici donc [b]STi[/b], une extension Chrome, Firefox et Safari.
 
-Version actuelle : 1.0.0 - 05/04/2015 - Licence MIT
+Version actuelle : 1.0.0 - 09/05/2015 - Licence MIT
 
 [size=6]Téléchargement[/size] :
-* [url=https://chrome.google.com/webstore/detail/][b]Page Chrome Webstore[/b][/url]
+* [url=https://chrome.google.com/webstore/detail/sti/jecicdgnpcebmlfeddbocddbelfnhfnf][b]Page Chrome Webstore[/b][/url]
 * [url=https://github.com/ZergRael/STi/releases/download/v1.0.0/sti.xpi][b]Extension Firefox[/b][/url] - Firefox 27.0 minimum
 * [url=https://github.com/ZergRael/STi/releases/download/v1.0.0/sti.mobile.xpi][b]Extension Firefox pour Android[/b][/url] - Firefox Mobile 27.0 minimum
 * [url=https://github.com/ZergRael/STi/releases/download/v1.0.0/sti.safariextz][b]Extension Safari[/b][/url]
@@ -15,37 +15,29 @@ Version actuelle : 1.0.0 - 05/04/2015 - Licence MIT
 [size=6]Présentation :[/size]
 L'extension se base sur un ensemble de scripts Javascript avec l'aide de la libraire jQuery. Cette librairie permet de simplifier le code tout en ajoutant des fonctions très pratiques ainsi que quelques suggestions glanées sur le forum.
 
-J'ai développé l'ensemble de ces scripts, même si j'ai récupéré quelques parties que j'avais déjà codé auparavant. Le code est entièrement sous licence MIT, donc totalement opensource.
+Les fonctionnalités proviennent pour la plupart de l'extension de l'ex-tracker au design similaire.
 
 La plupart des options sont sauvegardées entre chaque utilisation.
 
-[size=6]Pages affectées :[/size]
-[b]* Listes de torrents :[/b]
-- Page d'accueil -- https://www.so-torrent.com/
-- Recherche torrents -- https://www.so-torrent.com/sphinx/
-- Navigation torrents -- https://www.so-torrent.com/browse/
+[size=6]Fonctionnalités :[/size]
+[img]https://www.so-torrent.com/img/05-2015/sti_options.png[/img]
 
-> [i]Endless Scrolling[/i] : Arrivé en fin de page, la page suivante est ajoutée à la suite - Bouton de remontée en haut de page
-> [i]Scene uniquement[/i] : N'affiche que les torrents issus de releases scene
+[b]* Liste torrents[/b]
+> [i]Filtrage freeleech[/i] : Affiche/cache les torrents freeleech
+> [i]Filtrage nuked[/i] : Affiche/cache les torrents nuked
 > [i]Récupérer toutes les pages[/i] : Affiche l'ensemble des pages des snatched en une seule liste
-> [i]Tri par Nom, UL, DL, Real DL, SeedTime, Ratio[/i]	: Un clic sur la colonne associée trie les données - Peut-être lent en fonction de la taille de la liste
+> [i]Tri par clic sur les colonnes[/i] : Un clic sur le titre de la colonne associée trie les données
 > [i]Suggestions IMDB[/i] : Suggestions de recherche basées sur IMDB.fr et IMDB.com -- Utilise un système de cache perso
 > [i]Traduction IMDB[/i] : Ajout des torrents correspondant à la meilleure traduction d'IMDB si peu de résultats
-> [i]Colonne d'age[/i] : Colonne d'age calculée à partir de la date du torrent
-> [i]Marqueur de torrents[/i] : Marquage du dernier torrent vu pour afficher tous les torrents non vu à partir de ce marqueur
+> [i]Ajout colonnes[/i] : Age / Raccourcis Bookmark, Autoget, NFO
+> [i]Marqueur de torrents[/i] : Marquage du dernier torrent vu pour afficher tous les torrents non vus à partir de ce marqueur
 > [i]Commentaires au survol[/i] : Au survol du nombre de commentaires, ceux-ci s'affichent
-> [i]Tri par clic sur les colonnes[/i]
-> [i]Bookmark torrents[/i] : Permet d'ajouter les 40 premiers torrents aux bookmarks - ravomavain
-> [i]Colonne autoget[/i] : Colonne de boutons d'autoget direct du torrent
 > [i]Auto-refresh[/i] : Rafraîchissement automatique des derniers torrents et mise en avant
-> [i]Icone bookmark[/i] : Affichage d'une icone indiquant les torrents déjà bookmarkés (requiert la visite de la page https://www.so-torrent.com/bookmark/)
+> [i]Icone bookmark[/i] : Affichage d'une icone indiquant les torrents déjà bookmarkés
 > [i]Exclusion[/i] : Exclut certains résultats en fonction d'une chaîne de caractères
 > [i]Preview[/i] : Préviualisation de l'image principale de la fiche torrent par mouseover sur le [+]
 
 [b]* Snatched[/b]
-- Page des snatched -- https://www.so-torrent.com/snatched/
-
-> [i]Endless Scrolling[/i] : Arrivé en fin de page, la page suivante est ajoutée à la suite - Bouton de remontée en haut de page
 > [i]Récupération des pages[/i] : Récupération de toutes les pages pour former une liste complète de torrents
 > [i]Cacher les supprimés[/i] : Cache les torrents supprimés du tracker - Pas ceux que vous ne seedez plus
 > [i]Cacher les torrents en seed[/i] : N'affiche que les torrents qui ne sont plus seedés - Retrouve les H&R
@@ -54,110 +46,43 @@ La plupart des options sont sauvegardées entre chaque utilisation.
 > [i]Tri par colonne[/i] : Permet de trier les snatched par UL/DL/Seedtime/Ratio
 
 [b]* Twits[/b]
-- Posts d'un topic -- /forums.php?action=viewtopic&topicid=<id_topic>
-- Liste commentaires d'un post du blog -- /blog/id=<id_post_blog>
-- Liste commentaires d'un torrent -- /torrent/<id_torrent>/
-- Ajout de commentaire sur un torrent -- /com/id=<id_torrent>
-
 > [i]Autocomplétion des Twits[/i] : Un '@' suivi de quelques lettres puis un tab permet de compléter automatiquement un twit en fonction des pseudos déjà présents sur la page - Les tab suivants tentent les autres pseudos correspondants
 > [i]Coloration des Twits[/i] : Les twits déjà présents dans les posts sont colorés avec le lien associés en fonction des posteurs de la page - Les twits sur des pseudos non présents sur la page ne seront pas reconnus
-> [i]Annonce des twits ratés[/i] : Vous indique lorsqu'un de vos twits n'est pas correctement formé
 
 [b]* Forums[/b]
-- Liste des topics -- /forums.php?action=viewforum&forumid=<id_forum>
-- Posts d'un topic -- /forums.php?action=viewtopic&topicid=<id_topic>
-- Recherche -- https://www.so-torrent.com/forums.php?action=search
-
-> [i]Endless Scrolling[/i] : Arrivé en fin de page, la page suivante est ajoutée à la suite - Bouton de remontée en haut de page
 > [i]Cacheur de signatures[/i] : Permet de cacher les signatures au clic
 > [i]Cacher les signatures auto[/i] : Cache toutes les signatures - Ré-affichables au clic
 > [i]Correction du scrolling[/i] : Pour les utilisateurs du CSS à entête fixe
 
 [b]* Torrents[/b]
-- Liste commentaires d'un torrent -- /torrent/<id_torrent>/
-
 > [i]Quick comment[/i] : Ajoute un formulaire d'envoi de commentaire directement sur la page du torrent
-> [i]Commentaires désactivés[/i] : Propose l'envoi d'un MP préformaté (éditable) lorsque les commentaires d'un torrent sont désactivés. Permet de prévenir l'uploader avec l'ensemble des liens nécessaires en un seul clic, si ses MP sont activés.
-
-[b]* Aura[/b]
-- Mon aura -- https://www.so-torrent.com/m/aura/
-
-> [i]Calculateur d'objectif de karma[/i] : Entrez un objectif de karma, obtenez une date à laquelle vous les aurez
-> [i]Calculateur de palier d'aura[/i] : Entrez un objectif d'aura, obtenez le nombre de Go à mettre en seed pour l'atteindre (Warning : imprécis)
-> [i]Calculateur de changements d'aura[/i] : Entrez l'url d'un torrent, obtenez l'aura qu'il vous permettra d'atteindre
-> [i]Colonne de rentabilité par torrent[/i] : Valeur de A/Go du torrent (A est une valeur servant à calculer l'aura) - ravomavain
-
-[b]* Karma store[/b]
-- Pin's store -- https://www.so-torrent.com/karma/?tab=pins
-
-> [i]Cacher les pin's trop chers[/i] : Cache les pins que vous ne pouvez pas acheter avec le karma actuel
-> [i]Cacher les pin's déjà achetés[/i] : Cache les pins que vous avez déjà acheté
-> [i]Tri par prix[/i] : Trie les pin's par prix
 
 [b]* Badges[/b]
-- Liste des badges acquis -- https://www.so-torrent.com/m/badges/
-- Liste des badges acquis -- /badges/<user_id>
-
 > [i]Progression[/i] : Affiche votre progression vers l'obtention de ce badge
-> [i]Tous les badges[/i] : Affiche toutes les images de badges même si vous ne les avez pas (semi-transparents)
-> [i]Toolips[/i] : Voir les tooltips des badges non débloqués - ravomavain
 
 [b]* Bookmarks[/b]
-- Page des bookmarks -- https://www.so-torrent.com/bookmark/
-
-> [i]Suppression par catégorie[/i] : Supprime les 40 premiers bookmarks d'une catégorie - ravomavain
-> [i]Ajout en autoget[/i] : Ajoute les 15 premiers bookmarks dans l'autoget puis les supprime - ravomavain
 > [i]Mise en valeur[/i] : Le dernier bookmark téléchargé sera coloré pour le retrouver après un alt-tab
 > [i]Tri par colonne[/i] : Permet de trier les bookmarks par Nom, Date d'ajout, Taille, Seed, Leech
 
 [b]* Logs[/b]
-- Page des logs -- https://www.so-torrent.com/logs/
-
-> [i]Endless Scrolling[/i] : Arrivé en fin de page, la page suivante est ajoutée à la suite - Boutons personnalisables de remontée en haut de page & de pause
 > [i]Filtres[/i] : Affichage de certains types de logs
 > [i]Liens fiches[/i] : Liens automatiques sur les fiches torrents / summaries / requests
 
-[b]* Peers[/b]
-- Torrents en seed -- https://www.so-torrent.com/m/peers/
-
-> [i]Endless Scrolling[/i] : Arrivé en fin de page, la page suivante est ajoutée à la suite - Boutons personnalisables de remontée en haut de page & de pause
-> [i]Récupération des pages[/i] : Récupération de toutes les pages pour former une liste complète de torrents
-> [i]Filtre actif[/i] : Filtrage des torrents en seed actif ( > 0.00 Ko/s)
-> [i]Vitesse de seed[/i] : Calcul de la vitesse de seed totale dans le header colonne
-
-[b]* Les autres pages [/b]
-- Liste des requêtes -- https://www.so-torrent.com/req/
-- Liste des images -- https://www.so-torrent.com/m/images/
-- Liste des uploads -- https://www.so-torrent.com/m/uploads/
-- Dupecheck -- https://www.so-torrent.com/dupecheck/
-- Reseeds -- https://www.so-torrent.com/reseed.php
-- Liste des uploads d'un user -- /my/history/<user_id>/uploads
-
-> [i]Endless Scrolling[/i] : Arrivé en fin de page, la page suivante est ajoutée à la suite - Boutons personnalisables de remontée en haut de page & de pause
-
-- Summaries -- https://www.so-torrent.com/summary/id=<id_sum>
-- Liste des uploads -- https://www.so-torrent.com/m/uploads/
-
-> [i]Colonne d'age[/i] : Colonne d'age calculée à partir de la date du torrent
-> [i]Commentaires au survol[/i] : Au survol du nombre de commentaires, ceux-ci s'affichent
-
 [b]* Sur l'ensemble du site[/b]
-
+> [i]Endless Scrolling[/i] : Arrivé en fin de page, la page suivante est ajoutée à la suite - Boutons personnalisables de remontée en haut de page & de pause
 > [i]Validation des formulaires[/i] : Valide les formulaires (commentaires/posts/etc) avec ctrl+entrée
 > [i]Raccourcis BBCode[/i] : Permet d'ajouter les balises BBCode avec les raccourcis Ctrl + (b/u/i/q)
-> [i]Stats réelles[/i] : Affiche vos upload, download et ratio réels - requêtes exclues. Mis à jour toutes les 24h
-> [i]Buffer[/i] : Ajoute le buffer en mouseover sur le UL/DL
-> [i]Notification épisodes[/i] : Vérifie régulièrement la présence de nouveaux épisodes en fonction des séries suivies
 
-[size=6]Les options[/size]
+[size=6]Les options :[/size]
 
-[size=6]TODO list:[/size]
+[size=6]TODO list :[/size]
 - Nope
 
 - Proposez vos idées ! Tant que l'option est réalisable à partir de javascript et ne tire pas trop sur les serveurs, pourquoi pas ?
 
 [size=6]FAQ :[/size]
--
+> [i]Pas d'option pour les stats réelles ?[/i] :
+- La page des snatched est incomplète et ne permet pas d'obtenir les stats UL/DL détaillées pour cette option.
 
 [size=6]Changelog :[/size]
 [b]* 1.0.0 - 05/02/2015[/b]
