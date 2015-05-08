@@ -6,7 +6,8 @@ modules.twits = {
 		{ path_name: "/forums.php", params: { action: 'editpost' }, options: { twit_autoc: { scanArea: "#messageediting textarea" } } },
 		{ path_name: "/blog.php", params: { id: '*' }, options: { twit_color: { scanArea: ".blog_comment" }, twit_autoc: { scanArea: ".blog_responde textarea" } } }, // Not editable
 		{ path_name: "/torrent.php", params: { id: '*' }, options: { twit_color: { scanArea: ".com_text" }, twit_autoc: { scanArea: "#form_box textarea" } } },
-		{ path_name: "/com.php", params: { id: '*' }, options: { twit_color: { scanArea: ".com_text" }, twit_autoc: { scanArea: "#form_box textarea" } } }
+		{ path_name: "/com.php", params: { id: '*' }, options: { twit_color: { scanArea: ".com_text" }, twit_autoc: { scanArea: "#form_box textarea" } } },
+		{ path_name: "/com.php", params: { editd: '*' }, options: { twit_autoc: { scanArea: "#com_edit textarea" } } }
 	],
 	loaded: false,
 	loadModule: function(mOptions) {

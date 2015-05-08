@@ -509,8 +509,11 @@ modules.torrent_list = {
 			});
 		};
 
-		var showTorrentComments = function() {
-			var commLink = $(this);
+		var onTorrentCommentsMouseover = function() {
+			showTorrentComments($(this));
+		}
+
+		var showTorrentComments = function(commLink) {
 			if(opt.get(module_name, "direct_comments") && commLink.attr("href").match(/\/com.php/) && commLink.text() != "0") {
 				utils.grabPage(commLink.attr("href"), function(data) {
 					$("#sti_t_comm").remove();
@@ -518,7 +521,6 @@ modules.torrent_list = {
 					var $content = $(data.replace(/<script type="text\/javascript" src="static\/js\/.*"><\/script>/g, '')).find("#contenu").children(),
 						$com = $content.filter("#com"),
 						autoSubmit = false;
-						console.log($com);
 					$com.find("#compreview").on("submit", function(e) {
 						e.preventDefault();
 						dbg("[t_comment] Preview clicked");
@@ -540,7 +542,8 @@ modules.torrent_list = {
 										url: $form2.attr("action"),
 										data: $form2.serialize(),
 										success: function(res2) {
-											appendQuickComment();
+											$("#sti_t_comm").remove();
+											showTorrentComments(commLink);
 										}
 									});
 								})
@@ -759,7 +762,7 @@ modules.torrent_list = {
 		columnSorter();
 		addColumns();
 
-		$("#torrent_list").on("mouseenter", "a", showTorrentComments)
+		$("#torrent_list").on("mouseenter", "a", onTorrentCommentsMouseover)
 			.on("click", "a.autoget_link", autogetOnClick)
 			.on("click", "a.bookmark_link", bookmarkOnClick)
 			.on("click", "a.nfo_link", nfoOnClick)
