@@ -18,7 +18,7 @@ modules.endless_scrolling = {
 			opt_name: "snatched", loading: '.pager_align', pagination: ".pager_align", domExtract: "#table_snatchlist tr:not(:first)", domInsertion: "#table_snatchlist", pageModifier: -1
 		} },
 		{ path_name: "/my.php", params: { uploads: true }, options: {
-			opt_name: "uploads", loading: '.pager_align', pagination: '.pager_align', domExtract: "#contenu table tr", domInsertion: "#contenu table", cancelQ: true, cancelAmp: true, pageModifier: -1, notListeningToTrigger: true
+			opt_name: "uploads", loading: '.pager_align', pagination: '.pager_align', domExtract: "#contenu table tr", domInsertion: "#contenu table", pageModifier: -1, notListeningToTrigger: true
 		} },
 		{ path_name: "/logs.php", options: {
 			opt_name: "logs", loading: '.pager_align', pagination: '.pager_align', domExtract: "tbody tr:not(:first)", domInsertion: "tbody", pageModifier: -1
@@ -187,12 +187,6 @@ modules.endless_scrolling = {
 
 				// Looks like we changed page, updates
 				if(lookingAtPage != previousLookedPage) {
-					if(lookingAtPage > previousLookedPage + 1 || lookingAtPage < previousLookedPage - 1) {
-						dbg("[adapt_url] Welp, I'm lost, reset");
-						lostPage = true;
-						lookingAtPage = pagerData.thisPage;
-					}
-
 					dbg("[adapt_url] Looking at page %d", lookingAtPage);
 
 					// Update URL
