@@ -79,15 +79,6 @@ modules.twits = {
 			else {
 				iPseudo = false;
 			}
-
-			if(e.which == 13) {
-				if(qp_text.match(/\B@\w+[^\w\s]/g)) {
-					if(!$(".failed_twit").length) {
-						$(this).after('<div class="failed_twit" style="display: none;">Un ou plusieurs de vos twits semblent incorrects.<br />Rappel : <b>@pseudo message</b></div>');
-					}
-					$(".failed_twit").clearQueue().slideDown().delay(5000).slideUp();
-				}
-			}
 		};
 
 		var colorizeTwits = function(postId) {
