@@ -122,7 +122,6 @@ modules.twits = {
 			dbg("[AutoCTwit] Retry to bind");
 			$(mOptions.twit_autoc.scanArea).each(function(i, node) {
 				var events = $._data(node, "events");
-				console.log(events)
 				if(!events || !events.keydown) {
 					$(node).keydown(jOnKeydown);
 				}

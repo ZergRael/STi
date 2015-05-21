@@ -42,7 +42,6 @@ modules.forums = {
 			}
 
 			$(document).on("click", "a[href^='forums.php?action=editpost']", function(e) {
-				console.log(this);
 				e.preventDefault();
 
 				var $post = $(this).parents(".forum_user_message"),
