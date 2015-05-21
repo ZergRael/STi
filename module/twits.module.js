@@ -123,7 +123,7 @@ modules.twits = {
 					else {
 						return match;
 					}
-				});
+				}).replace(/ &nbsp;/g, " ").replace(/&nbsp; /g, "&nbsp;"));
 			});
 		}
 
