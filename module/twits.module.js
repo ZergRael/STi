@@ -127,6 +127,16 @@ modules.twits = {
 			});
 		}
 
+		var $shoutbox = $("#shoutbox_contain"), $dupe_shoutbox;
+		var duplicateShoutbox = function() {
+			$dupe_shoutbox = $shoutbox.clone().attr("id", "dupe_shoutbox_contain");
+			$shoutbox.hide().after($dupe_shoutbox);
+		};
+
+		var updateDupeShoutbox = function() {
+			$dupe_shoutbox.html($shoutbox.html());
+		};
+
 		var pseudos = {};
 		var buildPseudosHashmap = function() {
 			pseudos = {};
@@ -172,6 +182,7 @@ modules.twits = {
 			window.addEventListener("message", function(e) {
 				appendPseudosHashmap();
 				ajaxColorizeTwits();
+				updateDupeShoutbox();
 			}, false);
 
 			// Insert script directly in html to catch ajax global events
@@ -181,6 +192,7 @@ modules.twits = {
 				});
 			}, true);
 			ajaxColorizeTwits();
+			duplicateShoutbox();
 		}
 
 		$(document).on("endless_scrolling_insertion_done", function() {
