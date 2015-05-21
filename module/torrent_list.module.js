@@ -231,7 +231,7 @@ modules.torrent_list = {
 						return;
 					}
 					
-					var dateMatch = $(this).next().text().match(/(\d+)\/(\d+)\/(\d+) a (\d+):(\d+)/);
+					var dateMatch = $(this).next().text().match(/(\d+)\/(\d+)\/(\d+) à (\d+):(\d+)/);
 					if(!dateMatch || !dateMatch.length) { // This should never happen
 						return;
 					}
@@ -330,7 +330,7 @@ modules.torrent_list = {
 						tds.eq(1).after('<td class="nfo_torrent_' + tdNumber + '"><a href="#" class="nfo_link"><img src="' + chrome.extension.getURL("images/nfo.png") +'" /></a></td>');
 					}
 					if(ageCol) {
-						var dateMatch = $(this).next().text().match(/(\d+)\/(\d+)\/(\d+) a (\d+):(\d+)/);
+						var dateMatch = $(this).next().text().match(/(\d+)\/(\d+)\/(\d+) à (\d+):(\d+)/);
 						if(!dateMatch || !dateMatch.length) { // This should never happen
 							return;
 						}

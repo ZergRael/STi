@@ -22,7 +22,7 @@ modules.badges = {
 				name: "birthday", // 0
 				badges: [12, 24, 36, 48, 60],
 				pLabelName: "Date d'inscription",
-				regex: /((\d+)\/(\d+)\/(\d+) a (\d+):(\d+))/,
+				regex: /((\d+)\/(\d+)\/(\d+) à (\d+):(\d+))/,
 				postFunc: function(val) {
 					return utils.dateToDuration(val).monthTot;
 				}
