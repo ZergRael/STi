@@ -8,7 +8,7 @@ modules.twits = {
 		{ path_name: "/torrent.php", params: { id: '*' }, options: { twit_color: { scanArea: ".com_text" }, twit_autoc: { scanArea: "#form_box textarea" } } },
 		{ path_name: "/com.php", params: { id: '*' }, options: { twit_color: { scanArea: ".com_text" }, twit_autoc: { scanArea: "#form_box textarea" } } },
 		{ path_name: "/com.php", params: { editd: '*' }, options: { twit_autoc: { scanArea: "#com_edit textarea" } } },
-		{ path_name: "/box.php", options: { twit_autoc: { scanArea: "#message" }, useInterval: true } }
+		{ path_name: "/box.php", options: { twit_autoc: { scanArea: "#message" }, twit_color_ajaxed: { scanArea: "#shoutbox_contain" } } }
 	],
 	loaded: false,
 	loadModule: function(mOptions) {
@@ -107,9 +107,33 @@ modules.twits = {
 			dbg("[TwitColorize] Colorization ended");
 		};
 
+		var ajaxColorizeTwits = function() {
+			if(!opt.get(module_name, "twit_color")) {
+				return;
+			}
+
+			var postArea = $(mOptions.twit_color_ajaxed.scanArea);
+			postArea.each(function() {
+				var post = $(this);
+				post.html(post.html().replace(/([^'])@([\w]+)/gi, function(match, m1, m2) {
+					var user = pseudos[m2.toLowerCase()];
+					if(user) {
+						return m1 + '@<a href="' + user.url + '"><span class="' + user.class + '">' + m2 + '</span></a>';
+					}
+					else {
+						return match;
+					}
+				});
+			});
+		}
+
 		var pseudos = {};
 		var buildPseudosHashmap = function() {
 			pseudos = {};
+			appendPseudosHashmap();
+		};
+
+		var appendPseudosHashmap = function() {
 			$('span[class^=userclass]').each(function() {
 				pseudos[$(this).text().toLowerCase()] = { pseudo: $(this).text(), class: $(this).attr("class"), url: $(this).parent().attr("href") };
 			});
@@ -132,24 +156,31 @@ modules.twits = {
 			$(mOptions.twit_autoc.scanArea).keydown(jOnKeydown);
 		}
 
-		if(mOptions.twit_color) {
-			$(document).on("recolor_twits", function() {
-				colorizeTwits();
-			});
-		}
-
-		if(mOptions.useInterval) {
-			setInterval(function() {
-				buildPseudosHashmap();
-			}, 7000);
-		}
-
 		// Building pseudos hashmap
 		buildPseudosHashmap();
 
 		// Twit colorization
 		if(mOptions.twit_color) {
+			$(document).on("recolor_twits", function() {
+				colorizeTwits();
+			});
 			colorizeTwits();
+		}
+
+		// Twit color on ajax receive	
+		if(mOptions.twit_color_ajaxed) {
+			window.addEventListener("message", function(e) {
+				appendPseudosHashmap();
+				ajaxColorizeTwits();
+			}, false);
+
+			// Insert script directly in html to catch ajax global events
+			insertScript("sti_shoutbox", function() {
+				$(document).ajaxSuccess(function(e, xhr, settings, data) {
+					window.postMessage({type: "sti_shoutbox_ajaxsuccess"}, "*");
+				});
+			}, true);
+			ajaxColorizeTwits();
 		}
 
 		$(document).on("endless_scrolling_insertion_done", function() {
