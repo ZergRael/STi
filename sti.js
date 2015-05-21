@@ -1,6 +1,6 @@
 /*global $:false, utils:false, self:false, opt:false*/
 "use strict";
-var DEBUG = true;
+var DEBUG = false;
 
 // At this point, libs with most common functions are loaded
 // Options are ready but not loaded
