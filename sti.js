@@ -116,7 +116,8 @@ var appendFrame = function(o) {
 				(additionnalButtons.length ? additionnalButtons : $()),
 				$("<input>", {type: "button", id: "sti_" + o.id + "_close", class: "fine", value: " Fermer "})
 				)
-			)
+			),
+			(o.underButtonsText ? $("<div>", {id: "sti_copyright"}).append(o.underButtonsText) : $())
 		);
 
 	// Append

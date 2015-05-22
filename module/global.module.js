@@ -133,7 +133,7 @@ modules.global = {
 			var buttons = [ { b_id: "im_export", b_text: "Importer/Exporter", b_callback: createImportExportFrame } ];
 
 			// { id, classes, title, header, data, relativeToId, relativeToObj, relativeToWindow, top, left, css, buttons = [ /* close is by default */ { b_id, b_text, b_callback} ], underButtonsText }
-			var copyright = '<a href="/forums.php?action=viewtopic&topicid=6336">STi</a> by <a href="/users/2360140">ZergRael</a><span class="sti_debug">.</span>';
+			var copyright = '<a href="/forums.php?action=viewtopic&topicid=454">STi</a> by <a href="/sotorrent.php?id=11737">SillyTwix</a><span class="sti_debug">.</span>';
 			appendFrame({ id: "options", title: "STi Options", data: optionsFrameData, relativeToId: "navigation", top: 8, left: 230, buttons: buttons, header: optionsFrameHeader, onCloseCallback: onCloseCallback, underButtonsText: copyright });
 
 			$.each(opt.options, function(module_name, options) {
