@@ -7,7 +7,7 @@ Améliore et facilite la navigation sur certaines parties de ST
 Voir topic associé.
 
 ### Changelog
-**1.0.1**
+**1.0.2**
 - Added twit color on shoutbox
 - Fixed some spacing on shoutbox
 - Fixed date parser
