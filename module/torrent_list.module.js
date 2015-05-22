@@ -417,12 +417,12 @@ modules.torrent_list = {
 						$(torrentsTR.get().reverse()).each(function() {
 							if(!foundFirst && !$(this).find(".alt1").length && !$(this).hasClass("head_torrent") && Number($(this).find("td:nth(1) img:first").attr("id").substring(10)) >= firstTorrentId) {
 								foundFirst = true;
-								tdNumber = $(this).find(".name_torrent_1").length ? 1 : 0;
 								return;
 							}
 							if(foundFirst && !$(this).hasClass("head_torrent")) {
 								var torrentTR = $(this);
 								if(!torrentTR.find(".alt1").length) {
+									tdNumber = torrentTR.find(".name_torrent_1").length ? 1 : 0;
 									var torrentNameTd = torrentTR.find("td:nth(1)");
 									if(opt.get(module_name, "autoget_column")) {
 										torrentNameTd.after('<td class="autoget_torrent sti_col_' + tdNumber + '"><a href="#" class="autoget_link"><img src="static/images/rss.gif" /></a></td>');
@@ -442,9 +442,6 @@ modules.torrent_list = {
 								$("#torrent_list tr:last").remove();
 								insertedTrs = true;
 								torrentList.unshift(tagTorrent(torrentTR));
-								if(tdNumber == 1) {
-									tdNumber = 0;
-								}
 							}
 						});
 						if(insertedTrs) {
