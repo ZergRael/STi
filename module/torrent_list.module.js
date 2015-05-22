@@ -417,9 +417,7 @@ modules.torrent_list = {
 						$(torrentsTR.get().reverse()).each(function() {
 							if(!foundFirst && !$(this).find(".alt1").length && !$(this).hasClass("head_torrent") && Number($(this).find("td:nth(1) img:first").attr("id").substring(10)) >= firstTorrentId) {
 								foundFirst = true;
-								if($(this).find(".name_torrent_1")) {
-									tdNumber = 1;
-								}
+								tdNumber = $(this).find(".name_torrent_1").length ? 1 : 0;
 								return;
 							}
 							if(foundFirst && !$(this).hasClass("head_torrent")) {
