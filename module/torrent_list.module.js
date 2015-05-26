@@ -4,7 +4,7 @@ modules.torrent_list = {
 	pages: [
 		{ path_name: "/|/index.php", options: { buttons: "#sort", canRefresh: true, canMark: true, canFilter: true, canSort: true } },
 		{ path_name: "/sphinx.php", options: { buttons: ".form_search", buttonsAppend: true, canFilter: true, canSort: true } },
-		{ path_name: "/summary.php", options: { } }
+		{ path_name: "/summary.php", options: { buttons: ".torrent_list", canFilter: true } }
 	],
 	loaded: false,
 	loadModule: function(mOptions) {
