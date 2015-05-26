@@ -708,55 +708,71 @@ modules.torrent_list = {
 			siteRelativeDate = utils.getSiteRelativeDate();
 		};
 
-		var markerButton =  '<a id="torrent_marker_button" href="#">Marquer torrent</a> |';
-		var finderButton = '<a id="torrent_finder_button" href="#">Retrouver torrent</a> | ';
-		var filterButtons = '<span class="g_filter g_filter_' + opt.get(module_name, "filter_freeleech") + '" opt="filter_freeleech">FreeLeech</span> | <span class="g_filter g_filter_' + opt.get(module_name, "filter_nuked") + '" opt="filter_nuked">Nuked</span> |';
-		var stringFilterInput = '<input type="text" id="filter_string" placeholder="Filtre" size="12" title="Options de filtrage\nComplétés : c<10\nSeeders : s=1\nLeechers : l>12\nCommentaires : m>0\nChaine de caractères\nOpérateurs : && || !\n\nExemples :\nDVDRiP ou BDRiP avec +10 seeders\n\'dvdrip || bdrip && s>10\'\n\nExclure FUNKY et CARPEDIEM\n\'!funky && !carpediem\'" />| ';
-		var refreshButton = '<input id="auto_refresh" type="checkbox" ' + (opt.get(module_name, "auto_refresh") ? 'checked="checked" ' : ' ') + '/><label for="auto_refresh">Auto refresh</label> | ';
-		var buttons = "";
+		var markerButton =  '<a id="torrent_marker_button" href="#">Marquer torrent</a>',
+			finderButton = '<a id="torrent_finder_button" href="#">Retrouver torrent</a>',
+			filterButtons = ['<span id="filter_freeleech" class="g_state_button g_filter g_state_' + opt.get(module_name, "filter_freeleech") + '">FreeLeech</span>', '<span id="filter_nuked" class="g_state_button g_filter g_state_' + opt.get(module_name, "filter_nuked") + '">Nuked</span>'].join(" "),
+			stringFilterInput = '<input type="text" id="filter_string" placeholder="Filtre" size="12" title="Options de filtrage\nComplétés : c<10\nSeeders : s=1\nLeechers : l>12\nCommentaires : m>0\nChaine de caractères\nOpérateurs : && || !\n\nExemples :\nDVDRiP ou BDRiP avec +10 seeders\n\'dvdrip || bdrip && s>10\'\n\nExclure FUNKY et CARPEDIEM\n\'!funky && !carpediem\'" />',
+			refreshButton = '<span id="auto_refresh" class="g_state_button g_button g_state_' + Number(opt.get(module_name, "auto_refresh")) + '">Auto refresh</span>',
+			buttons = [];
 
 		dbg("[Init] Starting");
 
 		// Adding buttons
 		if(mOptions.canMark && (!pageUrl.params || !pageUrl.params.page || pageUrl.params.page === 0) && (!pageUrl.params || !pageUrl.params.sort || (pageUrl.params.sort == "id" && (!pageUrl.params.order || pageUrl.params.order == "desc"))) && opt.get(module_name, "t_marker_button")) {
-			var torrentIdMark = opt.get(module_name, "torrent_marker");
-			var firstTorrentId = Number($("tbody tr:nth(1) td:nth(1) a").attr("href").match(/\/torrent.php\?id=(\d+)/)[1]);
+			var torrentIdMark = opt.get(module_name, "torrent_marker"),
+				firstTorrentId = Number($("tbody tr:nth(1) td:nth(1) a").attr("href").match(/\/torrent.php\?id=(\d+)/)[1]);
 			if(torrentIdMark !== false && firstTorrentId - torrentIdMark < 2000) {
-				buttons += finderButton;
+				buttons.push(finderButton);
 			}
-			buttons += markerButton;
+			buttons.push(markerButton);
 		}
 		if(!pageUrl.params || !pageUrl.params.sort || (pageUrl.params.sort == "id" && pageUrl.params.order == "desc")) { isRefreshable = true; }
 		if(mOptions.canRefresh && isRefreshable) {
-			buttons += refreshButton;
+			buttons.push(refreshButton);
 		}
 		if(mOptions.canFilter) {
-			buttons += filterButtons;
+			buttons.push(filterButtons);
 			if(opt.get(module_name, "filter_string")) {
-				buttons += stringFilterInput;
+				buttons.push(stringFilterInput);
 			}
 		}
 
 		if(mOptions.buttonsAppend) {
-			$(mOptions.buttons).append(buttons);
+			$(mOptions.buttons).append(buttons.join(" "));
 		}
 		else {
-			$(mOptions.buttons).prepend(buttons);
+			$(mOptions.buttons).prepend(buttons.join(" "));
 		}
 		$("#torrent_marker_button").click(mark_first_torrent);
 		$("#torrent_finder_button").click(find_marked_torrent);
 
 		// Torrents filtering
-		$(".g_filter").click(function() {
-			var button = $(this);
-			var optName = button.attr("opt");
-			var optStatus = opt.get(module_name, optName);
-			button.removeClass("g_filter_" + optStatus);
-			optStatus = ++optStatus > 2 ? 0 : optStatus;
-			opt.set(module_name, optName, optStatus);
-			dbg("[Filters] %s is %s", optName, opt.get(module_name, optName));
-			button.addClass("g_filter_" + optStatus);
-			filtersChanged();
+		$(".g_state_button").click(function() {
+			var $button = $(this),
+				optName = $button.attr("id"),
+				optStatus = opt.get(module_name, optName);
+			$button.removeClass("g_state_" + Number(optStatus));
+			if($button.hasClass("g_filter")) {
+				optStatus = ++optStatus > 2 ? 0 : optStatus;
+				opt.set(module_name, optName, optStatus);
+				dbg("[Filter] %s is %s", optName, opt.get(module_name, optName));
+				filtersChanged();
+			}
+			else {
+				optStatus = !optStatus;
+				opt.set(module_name, optName, optStatus);
+				if(optName == "auto_refresh") {
+					if(optStatus) {
+						dbg("[auto_refresh] Starting");
+						startAutorefresh();
+					}
+					else {
+						dbg("[auto_refresh] Ended");
+						clearInterval(autorefreshInterval);
+					}
+				}
+			}
+			$button.addClass("g_state_" + Number(optStatus));
 		});
 
 		$("#filter_string").on("change", filtersChanged).on("keydown", function(e) {
@@ -765,18 +781,6 @@ modules.torrent_list = {
 			if(e.which == 13) { filtersChanged(); }
 		});
 
-		$("#auto_refresh").change(function() {
-			opt.set(module_name, "auto_refresh", $(this).prop("checked"));
-			dbg("[auto_refresh] is %s", opt.get(module_name, "auto_refresh"));
-			if(opt.get(module_name, "auto_refresh")) {
-				dbg("[auto_refresh] Starting");
-				startAutorefresh();
-			}
-			else {
-				dbg("[auto_refresh] Ended");
-				clearInterval(autorefreshInterval);
-			}
-		});
 		tagTorrents($("tbody tr"));
 		filtersChanged();
 		columnSorter();
