@@ -115,33 +115,48 @@ modules.logs = {
 		dbg("[Init] Starting");
 		// Execute functions
 
-		var buttons = '<input id="uploads_filter" class="sti_filter" type="checkbox" ' + (!opt.get(module_name, "uploads_filter") ? 'checked="checked" ' : ' ') + '/><label for="uploads_filter">Uploads</label> | ';
-		buttons += '<input id="delete_filter" class="sti_filter" type="checkbox" ' + (!opt.get(module_name, "delete_filter") ? 'checked="checked" ' : ' ') + '/><label for="delete_filter">Delete</label> | ';
-		buttons += '<input id="edit_filter" class="sti_filter" type="checkbox" ' + (!opt.get(module_name, "edit_filter") ? 'checked="checked" ' : ' ') + '/><label for="edit_filter">Edits</label> | ';
-		buttons += '<input id="request_filter" class="sti_filter" type="checkbox" ' + (!opt.get(module_name, "request_filter") ? 'checked="checked" ' : ' ') + '/><label for="request_filter">Requests</label> | ';
-		buttons += '<input id="request_fill_filter" class="sti_filter" type="checkbox" ' + (!opt.get(module_name, "request_fill_filter") ? 'checked="checked" ' : ' ') + '/><label for="request_fill_filter">Requests filled</label> | ';
-		buttons += '<input id="summary_edit_filter" class="sti_filter" type="checkbox" ' + (!opt.get(module_name, "summary_edit_filter") ? 'checked="checked" ' : ' ') + '/><label for="summary_edit_filter">Summary edit</label> | ';
-		buttons += '<input id="summary_new_filter" class="sti_filter" type="checkbox" ' + (!opt.get(module_name, "summary_new_filter") ? 'checked="checked" ' : ' ') + '/><label for="summary_new_filter">Summary new</label> | ';
-		buttons += '<input id="auto_refresh" type="checkbox" ' + (opt.get(module_name, "auto_refresh") ? 'checked="checked" ' : ' ') + '/><label for="auto_refresh">Auto refresh (60secs)</label> | ';
-		$(mOptions.buttons).prepend(buttons);
+		var buttons = [
+			'<span id="uploads_filter" class="g_state_button g_filter g_state_' + (opt.get(module_name, "uploads_filter") ? "2" : "0") + '">Uploads</span>',
+			'<span id="delete_filter" class="g_state_button g_filter g_state_' + (opt.get(module_name, "delete_filter") ? "2" : "0") + '">Delete</span>',
+			'<span id="edit_filter" class="g_state_button g_filter g_state_' + (opt.get(module_name, "edit_filter") ? "2" : "0") + '">Edits</span>',
+			'<span id="request_filter" class="g_state_button g_filter g_state_' + (opt.get(module_name, "request_filter") ? "2" : "0") + '">Requests</span>',
+			'<span id="request_fill_filter" class="g_state_button g_filter g_state_' + (opt.get(module_name, "request_fill_filter") ? "2" : "0") + '">Requests filled</span>',
+			'<span id="summary_edit_filter" class="g_state_button g_filter g_state_' + (opt.get(module_name, "summary_edit_filter") ? "2" : "0") + '">Summary edit</span>',
+			'<span id="summary_new_filter" class="g_state_button g_filter g_state_' + (opt.get(module_name, "summary_new_filter") ? "2" : "0") + '">Summary new</span>',
+			'<span id="auto_refresh" class="g_state_button g_button g_state_' + Number(opt.get(module_name, "auto_refresh")) + '">Auto refresh</span>',
+		];
+		$(mOptions.buttons).prepend(buttons.join(" "));
 
-		$("#auto_refresh").change(function() {
-			opt.set(module_name, "auto_refresh", $(this).prop("checked"));
-			dbg("[auto_refresh] is %s", opt.get(module_name, "auto_refresh"));
-			if(opt.get(module_name, "auto_refresh")) {
-				autoRefresh();
+		$(".g_state_button").click(function() {
+			var $button = $(this),
+				optName = $button.attr("id"),
+				optState = opt.get(module_name, optName);
+
+			if($button.hasClass("g_filter")) {
+				$button.removeClass("g_state_" + (optState ? "2" : "0"));
+				optState = !optState;
+				opt.set(module_name, optName, optState);
+				refreshFilters();
+				$(document).trigger("scroll");
+				if(pageUrl.params && pageUrl.params.q) {
+					updateBottomText();
+				}
+				$button.addClass("g_state_" + (optState ? "2" : "0"));
 			}
 			else {
-				clearInterval(refreshTimer);
-			}
-		});
-
-		$(".sti_filter").change(function() {
-			opt.set(module_name, $(this).attr("id"), !$(this).prop("checked"));
-			refreshFilters();
-			$(document).trigger("scroll");
-			if(pageUrl.params && pageUrl.params.q) {
-				updateBottomText();
+				$button.removeClass("g_state_" + Number(optState));
+				optState = !optState;
+				opt.set(module_name, optName, optState);
+				if(optName == "auto_refresh") {
+					dbg("[auto_refresh] is %s", opt.get(module_name, "auto_refresh"));
+					if(optState) {
+						autoRefresh();
+					}
+					else {
+						clearInterval(refreshTimer);
+					}
+				}
+				$button.addClass("g_state_" + Number(optState));
 			}
 		});
 
