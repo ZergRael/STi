@@ -26,6 +26,9 @@ modules.endless_scrolling = {
 		{ path_name: "/req.php", options: {
 			opt_name: "req", loading: '.pager_align', pagination: '.pager_align', domExtract: "#requests_list tbody tr:not(:first)", domInsertion: "#requests_list tbody", pageModifier: -1, notListeningToTrigger: true
 		} },
+		{ path_name: "/series.php", options: {
+			opt_name: "series", loading: '.pager_align', pagination: '.pager_align', domExtract: "#torrent_list tr", domInsertion: "#torrent_list tbody", pageModifier: -1
+		} },
 	],
 	loaded: false,
 	loadModule: function(mOptions) {
