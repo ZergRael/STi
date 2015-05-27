@@ -2,9 +2,10 @@ modules.torrent_list = {
 	name: "torrent_list",
 	dText: "Liste torrents",
 	pages: [
-		{ path_name: "/|/index.php", options: { buttons: "#sort", canRefresh: true, canMark: true, canFilter: true, canSort: true } },
-		{ path_name: "/sphinx.php", options: { buttons: ".form_search", buttonsAppend: true, canFilter: true, canSort: true } },
-		{ path_name: "/summary.php", options: { buttons: ".torrent_list", canFilter: true } }
+		{ path_name: "/|/index.php", options: { buttons: "#sort", btnPos: "prepend", canRefresh: true, canMark: true, canFilter: true, canSort: true } },
+		{ path_name: "/sphinx.php", options: { buttons: ".form_search", btnPos: "append", canFilter: true, canSort: true } },
+		{ path_name: "/summary.php", options: { buttons: ".torrent_list", btnPos: "prepend", canFilter: true } },
+		{ path_name: "/series.php", options: { buttons: "#torrent_list", btnPos: "before", canFilter: true } }
 	],
 	loaded: false,
 	loadModule: function(mOptions) {
@@ -737,12 +738,7 @@ modules.torrent_list = {
 			}
 		}
 
-		if(mOptions.buttonsAppend) {
-			$(mOptions.buttons).append(buttons.join(" "));
-		}
-		else {
-			$(mOptions.buttons).prepend(buttons.join(" "));
-		}
+		utils.insertHtml(buttons.join(" "), $(mOptions.buttons), mOptions.btnPos);
 		$("#torrent_marker_button").click(mark_first_torrent);
 		$("#torrent_finder_button").click(find_marked_torrent);
 
